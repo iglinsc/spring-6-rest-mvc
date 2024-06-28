@@ -1,5 +1,6 @@
 package guru.springframework.spring6restmvc.controllers;
 
+import guru.springframework.spring6restmvc.bootstrap.BeerStyle;
 import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.mappers.BeerMapper;
 import guru.springframework.spring6restmvc.model.BeerDTO;
@@ -20,6 +21,8 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -114,7 +117,18 @@ class BeerControllerIT {
 
     @Test
     void testSaveNewBeer() {
-        BeerDTO beerDTO = BeerDTO.builder().beerName("New Beer").build();
+        BeerDTO beerDTO = BeerDTO.builder().beerName("New Beer")
+                .beerStyle(BeerStyle.PILSNER)
+                .upc("123456789012")
+
+                .version(2)
+                .price(BigDecimal.valueOf(3.99))
+                .QuantityOnDemand(1)
+
+                .build();
+
+
+
 
         ResponseEntity responseEntity = beerController.HandlePost(beerDTO);
 

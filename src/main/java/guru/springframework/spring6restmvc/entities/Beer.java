@@ -6,8 +6,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.sql.Types;
@@ -37,20 +39,25 @@ public class Beer {
     @NotNull
     @NotBlank
     private String beerName;
+    @Enumerated(EnumType.STRING)
     private BeerStyle beerStyle;
     @NotNull
     @NotBlank
     @Size(max = 255)
     private String upc;
-    @NotNull
+
+
+    @Column( length = 255)
+    private String email;
 
     private Integer quantityOnHand;
     @NotNull
 
     private BigDecimal price;
-    @NotNull
 
+     @CreationTimestamp
     private LocalDateTime createdDate;
+     @UpdateTimestamp
     private LocalDateTime updateDate;
 
 

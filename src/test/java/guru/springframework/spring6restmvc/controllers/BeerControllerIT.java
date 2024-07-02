@@ -161,7 +161,7 @@ class BeerControllerIT {
     void testListBeers(){
         List<Beer> beers = beerRepository.findAll();
 
-        assertThat(beers.size()).isEqualTo(3);
+        assertThat(beers.size()).isGreaterThan(2000);
     }
     @Rollback
      @Transactional

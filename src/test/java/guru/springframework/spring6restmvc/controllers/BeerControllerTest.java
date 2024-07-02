@@ -76,6 +76,7 @@ class BeerControllerTest {
         BeerDTO beer = BeerDTO.builder()
 
                 .beerName("Random Beer Name")  // Random beer name
+                .id(UUID.randomUUID())
                 .beerStyle(BeerStyle.ALE)  // Random beer style
                 .upc("123456789012")  // Random 12-digit UPC code
                 .QuantityOnDemand(50)  // Random quantity on demand

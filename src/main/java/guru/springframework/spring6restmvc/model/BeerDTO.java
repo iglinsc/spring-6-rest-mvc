@@ -2,6 +2,7 @@ package guru.springframework.spring6restmvc.model;
 
 import guru.springframework.spring6restmvc.bootstrap.BeerStyle;
 import guru.springframework.spring6restmvc.bootstrap.BootstrapData;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -28,6 +29,8 @@ public class BeerDTO {
     @NotBlank
     @NotBlank
     private String upc;
+
+
     private Integer QuantityOnDemand;
 
     @NotNull

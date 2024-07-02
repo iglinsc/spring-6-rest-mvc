@@ -1,6 +1,6 @@
 CREATE TABLE beer (
                       price DECIMAL(38,2) NOT NULL,
-                      quantity_on_hand INT NOT NULL,
+                      quantity_on_hand INT,
                       version INT,
                       created_date DATETIME NOT NULL,
                       update_date DATETIME,

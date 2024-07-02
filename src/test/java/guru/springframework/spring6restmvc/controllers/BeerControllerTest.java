@@ -12,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -53,7 +52,7 @@ class BeerControllerTest {
 
     @Test
     void updateBeer() throws Exception {
-        BeerDTO beer = beerServiceImpl.listBeers().get(0);
+        BeerDTO beer = beerServiceImpl.listBeers(null).get(0);
 
         mockMvc.perform(put("/api/v1/beer/" +  beer.getId())
                 .accept(MediaType.APPLICATION_JSON)
@@ -86,7 +85,7 @@ class BeerControllerTest {
                 .build();
 
         // Mock the behavior of the beerService to return another beer object upon saving
-        given(beerService.saveBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().get(1));
+        given(beerService.saveBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers(null).get(1));
 
         // Perform the POST request and validate the response
        assertThat(beer).isNotNull();
@@ -102,7 +101,7 @@ class BeerControllerTest {
 void testCreateBeerNullBeerName() throws Exception {
     BeerDTO beerDTO = BeerDTO.builder().build();
 
-given(beerService.saveBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().get(1));
+given(beerService.saveBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers(null).get(1));
 
 mockMvc.perform(post("/api/v1/beer").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
         .content(mapper.writeValueAsString(beerDTO))).andExpect(status().isBadRequest());
@@ -112,7 +111,7 @@ mockMvc.perform(post("/api/v1/beer").accept(MediaType.APPLICATION_JSON).contentT
 
     @Test
     void testListBeers() throws Exception {
-        given(beerService.listBeers()).willReturn(beerServiceImpl.listBeers());
+        given(beerService.listBeers(null)).willReturn(beerServiceImpl.listBeers(null));
 
         mockMvc.perform(get("/api/v1/beer")
                         .accept(MediaType.APPLICATION_JSON))
@@ -120,7 +119,7 @@ mockMvc.perform(post("/api/v1/beer").accept(MediaType.APPLICATION_JSON).contentT
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()", is(3)));
 
-        System.out.println(mapper.writeValueAsString(beerServiceImpl.listBeers()));
+        System.out.println(mapper.writeValueAsString(beerServiceImpl.listBeers(null)));
 
     }
     @Test
@@ -149,7 +148,7 @@ mockMvc.perform(post("/api/v1/beer").accept(MediaType.APPLICATION_JSON).contentT
 
     @Test
     void getBeerById() throws Exception {
-        BeerDTO testBeer = beerServiceImpl.listBeers().get(0);
+        BeerDTO testBeer = beerServiceImpl.listBeers(null).get(0);
 
         given(beerService.getBeerById(testBeer.getId())).willReturn(Optional.of(testBeer));
 

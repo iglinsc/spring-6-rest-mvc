@@ -49,7 +49,8 @@ public class BootstrapData implements CommandLineRunner {
                         .beerName(StringUtils.abbreviate(beerCSVRecord.getBeer(), 50))
                         .beerStyle(BeerStyle.PILSNER)
                         .price(BigDecimal.TEN)
-
+                                .createdDate(LocalDateTime.now())
+                                .updateDate(LocalDateTime.now())
                         .upc(Integer.toString(beerCSVRecord.getRow())) // Convert int to String
                         .quantityOnHand(Integer.valueOf(beerCSVRecord.getCountY())) // Assuming getCount() retrieves count
                         .build());

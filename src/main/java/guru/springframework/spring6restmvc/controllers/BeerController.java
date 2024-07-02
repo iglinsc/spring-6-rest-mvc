@@ -70,8 +70,8 @@ public ResponseEntity HandlePost(@RequestBody BeerDTO beer) {
   }
 
   @RequestMapping(method = RequestMethod.GET)
-  public List<BeerDTO> listBeers() {
-    return beerService.listBeers();
+  public List<BeerDTO> listBeers(@RequestParam(required = false) String beerName) {
+    return beerService.listBeers(beerName);
   }
 
   @RequestMapping(value = "{beerId}" , method = RequestMethod.GET)

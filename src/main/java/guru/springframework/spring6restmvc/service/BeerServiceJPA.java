@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,8 +27,23 @@ public class BeerServiceJPA implements BeerService {
 
 
     @Override
-    public List<BeerDTO> listBeers() {
-        return beerRepository.findAll().stream().map(beerMapper::beerToBeerDto).collect(Collectors.toList());
+    public List<BeerDTO> listBeers(String beerName) {
+        List<Beer> beerList;
+        if(StringUtils.hasText(beerName)){
+            beerList = beerListByName(beerName);
+
+
+        }  else {
+            beerList = beerRepository.findAll();
+        }
+
+
+
+        return beerList.stream().map(beerMapper::beerToBeerDto).collect(Collectors.toList());
+    }
+
+    private List<Beer> beerListByName(String beerName) {
+        return beerRepository.findAllByBeerNameIsLikeIgnoreCase("%"+beerName+"%");
     }
 
     @Override

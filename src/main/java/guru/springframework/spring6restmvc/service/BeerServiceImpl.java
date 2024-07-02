@@ -8,7 +8,6 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @Service
@@ -59,7 +58,7 @@ public BeerServiceImpl() {
 }
 
 @Override
-public List<BeerDTO> listBeers() {
+public List<BeerDTO> listBeers(String beerName) {
  return new ArrayList<>(beerMap.values());
 }
 

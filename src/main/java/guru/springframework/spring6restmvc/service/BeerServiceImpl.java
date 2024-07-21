@@ -1,7 +1,10 @@
 package guru.springframework.spring6restmvc.service;
 
+import guru.springframework.spring6restmvc.entities.BeerStyle;
 import guru.springframework.spring6restmvc.model.BeerDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -58,8 +61,8 @@ public BeerServiceImpl() {
 }
 
 @Override
-public List<BeerDTO> listBeers(String beerName) {
- return new ArrayList<>(beerMap.values());
+public Page<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, boolean showInventory, Integer pageNumber, Integer pageSize) {
+ return new PageImpl<>(new ArrayList<>(beerMap.values())) ;
 }
 
     @Override

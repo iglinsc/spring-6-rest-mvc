@@ -1,10 +1,12 @@
 package guru.springframework.spring6restmvc.controllers;
 
+import guru.springframework.spring6restmvc.entities.BeerStyle;
 import guru.springframework.spring6restmvc.model.BeerDTO;
 import guru.springframework.spring6restmvc.service.BeerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -70,8 +71,12 @@ public ResponseEntity HandlePost(@RequestBody BeerDTO beer) {
   }
 
   @RequestMapping(method = RequestMethod.GET)
-  public List<BeerDTO> listBeers(@RequestParam(required = false) String beerName) {
-    return beerService.listBeers(beerName);
+  public Page<BeerDTO> listBeers(@RequestParam(required = false) String beerName , @RequestParam(required = false) BeerStyle beerStyle,
+                                 @RequestParam (required = false) boolean showInventory,
+                                 @RequestParam (required = false)  Integer pageNumber,
+                                 @RequestParam (required = false)    Integer pageSize) {
+
+    return beerService.listBeers(beerName , beerStyle, showInventory,pageNumber,pageSize);
   }
 
   @RequestMapping(value = "{beerId}" , method = RequestMethod.GET)

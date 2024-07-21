@@ -67,6 +67,13 @@
             <version>5.9</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.reactivestreams</groupId>
+            <artifactId>reactive-streams</artifactId>
+            <version>1.0.4</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>

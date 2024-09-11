@@ -56,12 +56,13 @@ public class CustomerController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public Page<CustomerDTO> listCustomers(
+    public ResponseEntity<Page<CustomerDTO>> listCustomers(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) Integer pageNumber,
             @RequestParam(required = false) Integer pageSize) {
-        return customerService.listCustomers(name, email, pageNumber, pageSize);
+        Page<CustomerDTO> customers = customerService.listCustomers(name, email, pageNumber, pageSize);
+        return ResponseEntity.ok(customers);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)

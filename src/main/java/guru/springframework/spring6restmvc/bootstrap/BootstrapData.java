@@ -2,62 +2,89 @@ package guru.springframework.spring6restmvc.bootstrap;
 
 import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.entities.BeerStyle;
+import guru.springframework.spring6restmvc.entities.Customer;
 import guru.springframework.spring6restmvc.model.BeerCsvData;
+import guru.springframework.spring6restmvc.model.CustomerCsvData;
 import guru.springframework.spring6restmvc.repositories.BeerRepository;
+import guru.springframework.spring6restmvc.repositories.CustomerRepository;
 import guru.springframework.spring6restmvc.service.BeerCsvService;
+import guru.springframework.spring6restmvc.service.CustomerCsvService;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class BootstrapData implements CommandLineRunner {
 
     private final BeerRepository beerRepository;
-   private  final BeerCsvService BeerCsvService;
+    private final BeerCsvService beerCsvService;
+    private final CustomerRepository customerRepository;
+    private final CustomerCsvService customerCsvService;
+
     @Autowired
-    public BootstrapData(BeerRepository beerRepository, guru.springframework.spring6restmvc.service.BeerCsvService beerCsvService) {
+    public BootstrapData(
+            BeerRepository beerRepository,
+            BeerCsvService beerCsvService,
+            CustomerRepository customerRepository,
+            CustomerCsvService customerCsvService) {
         this.beerRepository = beerRepository;
-        BeerCsvService = beerCsvService;
+        this.beerCsvService = beerCsvService;
+        this.customerRepository = customerRepository;
+        this.customerCsvService = customerCsvService;
     }
+
     @Transactional
     @Override
     public void run(String... args) throws Exception {
-
         loadBeerData();
-        loadCsvData();
+        loadBeerCsvData();
+        loadCustomerCsvData();
     }
 
-    private void loadCsvData() throws FileNotFoundException {
+    private void loadBeerCsvData() throws FileNotFoundException {
         if (beerRepository.count() < 10) {
             File file = new File("src/main/resources/csvdata/beers.csv");
-            List<BeerCsvData> recs = BeerCsvService.ConvertCSV(file);
+            List<BeerCsvData> recs = beerCsvService.ConvertCSV(file);
 
             recs.forEach(beerCSVRecord -> {
-
-
-                // Assuming BeerCsvData has methods getBeer(), getRow(), and getCount()
                 beerRepository.save(Beer.builder()
                         .beerName(StringUtils.abbreviate(beerCSVRecord.getBeer(), 50))
-                        .beerStyle(BeerStyle.PILSNER)
-                        .price(BigDecimal.TEN)
-                                .createdDate(LocalDateTime.now())
-                                .updateDate(LocalDateTime.now())
+                        .beerStyle(BeerStyle.PILSNER) // Adjust as needed
+                        .price(BigDecimal.TEN) // Adjust as needed
+                        .createdDate(LocalDateTime.now())
+                        .updateDate(LocalDateTime.now())
                         .upc(Integer.toString(beerCSVRecord.getRow())) // Convert int to String
                         .quantityOnHand(Integer.valueOf(beerCSVRecord.getCountY())) // Assuming getCount() retrieves count
                         .build());
             });
         }
+    }
 
+    private void loadCustomerCsvData() throws FileNotFoundException {
+        if (customerRepository.count() < 10) { // Adjust the condition as needed
+            File file = new File("src/main/resources/csvdata/customer.csv");
+            List<CustomerCsvData> recs = customerCsvService.convertCSV(file);
 
+            recs.forEach(customerCSVRecord -> {
+                customerRepository.save(Customer.builder()
+                        .id(UUID.randomUUID()) // Generate a new UUID or use the one from the CSV if needed
+                        .name(customerCSVRecord.getName())
+                        .email(customerCSVRecord.getEmail())
+                        .version(customerCSVRecord.getVersion())
+                        .createdDate(customerCSVRecord.getCreatedDate())
+                        .updateDate(customerCSVRecord.getUpdateDate())
+                        .build());
+            });
+        }
     }
 
     private void loadBeerData() {
@@ -76,7 +103,8 @@ public class BootstrapData implements CommandLineRunner {
                 .beerName("Stout")
                 .beerStyle(BeerStyle.PORTER)
                 .upc("987654321098")
-                .quantityOnHand(50).version(3)
+                .quantityOnHand(50)
+                .version(3)
                 .price(BigDecimal.valueOf(4.50))
                 .createdDate(LocalDateTime.now().minusMonths(3))
                 .updateDate(LocalDateTime.now().minusHours(12))
@@ -84,7 +112,8 @@ public class BootstrapData implements CommandLineRunner {
 
         Beer beer3 = Beer.builder()
                 .beerName("Pilsner")
-                .beerStyle(BeerStyle.LAGER).version(4)
+                .beerStyle(BeerStyle.LAGER)
+                .version(4)
                 .upc("246801357924")
                 .quantityOnHand(75)
                 .price(BigDecimal.valueOf(2.99))

@@ -50,4 +50,12 @@ public class BeerOrderLine {
 
     @Column(name = "quantity_allocated")
     private Integer quantityAllocated = 0;
+
+    @ManyToOne()
+    @JoinColumn(name =  "beer_order_id")
+    private BeerOrder BeerOrder;
+
+    @ManyToOne()
+    @JoinColumn(name = "beer_id")
+    private Beer beer;
 }

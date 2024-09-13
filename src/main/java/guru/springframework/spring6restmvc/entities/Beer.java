@@ -1,6 +1,6 @@
 package guru.springframework.spring6restmvc.entities;
 
-import guru.springframework.spring6restmvc.bootstrap.BootstrapData;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,6 +14,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.sql.Types;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -22,6 +24,7 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class Beer {
 
     @GeneratedValue(generator = "UUID")
@@ -47,7 +50,7 @@ public class Beer {
     private String upc;
 
 
-    @Column( length = 255)
+    @Column( length = 100)
     private String email;
 
     private Integer quantityOnHand;
@@ -60,5 +63,23 @@ public class Beer {
      @UpdateTimestamp
     private LocalDateTime updateDate;
 
+     @OneToMany(mappedBy = "beer")
+     private Set<BeerOrderLine> beerOrderLines;
+
+     public void addCategory(Category category) {
+         this.categories.add(category);
+         category.getBeers().add(this);
+     }
+
+     public void removeCategory(Category category) {
+
+         this.categories.remove(category);
+         category.getBeers().remove(this);
+     }
+
+     @Builder.Default
+     @ManyToMany(fetch = FetchType.EAGER)
+     @JoinTable( name = "beer_category",  joinColumns = @JoinColumn(name = "beer_id") , inverseJoinColumns = @JoinColumn(name = "category_id"))
+     private Set<Category> categories = new HashSet<>();
 
 }

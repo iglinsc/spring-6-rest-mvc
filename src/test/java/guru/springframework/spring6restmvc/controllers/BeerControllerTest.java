@@ -2,6 +2,7 @@ package guru.springframework.spring6restmvc.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.springframework.spring6restmvc.bootstrap.BeerStyle;
+import guru.springframework.spring6restmvc.config.SpringSecConfig;
 import guru.springframework.spring6restmvc.model.BeerDTO;
 import guru.springframework.spring6restmvc.service.BeerService;
 import guru.springframework.spring6restmvc.service.BeerServiceImpl;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +26,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import java.math.BigDecimal;
@@ -38,6 +41,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BeerController.class)
+@Import(SpringSecConfig.class)
 class BeerControllerTest {
 
     @Autowired
@@ -50,6 +54,9 @@ class BeerControllerTest {
 
     @Autowired
     ObjectMapper mapper = new ObjectMapper();
+
+    public final String user = "admin";
+    public final String password = "password";
 
     @BeforeEach
     void setUp() {
@@ -72,7 +79,8 @@ class BeerControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/v1/beer?pageNumber=0&pageSize=3&sort=beerName,asc")
-                        .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON)
+                .with(user(user).password(password).roles("USER")))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.content", hasSize(3)))
@@ -82,6 +90,17 @@ class BeerControllerTest {
     }
 
 
+    @Test
+    void testNoAuthentication() throws Exception {
+
+        mockMvc.perform(get("/api/v1/beer")
+                        .accept(MediaType.APPLICATION_JSON))
+
+                .andExpect(status().isUnauthorized());
+
+
+
+    }
 
     @Test
     void testListBeersPagination() throws Exception {
@@ -96,7 +115,8 @@ class BeerControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/v1/beer?pageNumber=0&pageSize=3")
-                        .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON)
+                .with(user(user).password(password).roles("USER")))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.content", hasSize(3)))
@@ -111,6 +131,7 @@ class BeerControllerTest {
         BeerDTO beer = beerServiceImpl.listBeers(null,null,false,null,null).getContent().get(0);
 
         mockMvc.perform(put("/api/v1/beer/" +  beer.getId())
+                .with(user(user).password(password).roles("USER"))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(beer)))
@@ -142,6 +163,7 @@ class BeerControllerTest {
 
         // Perform the POST request and validate the response
         mockMvc.perform(post("/api/v1/beer")
+                        .with(user(user).password(password).roles("USER"))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(beer)))
@@ -181,6 +203,7 @@ class BeerControllerTest {
 
         // Perform the POST request with BeerDTO having a null beerName
         mockMvc.perform(post("/api/v1/beer")
+                        .with(user(user).password(password).roles("USER"))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(beerDTO)))
@@ -198,10 +221,11 @@ class BeerControllerTest {
         given(beerService.listBeers(any(),any(),anyBoolean(),anyInt(),anyInt())).willReturn(beerServiceImpl.listBeers(any(),any(),anyBoolean(),anyInt(),anyInt()));
 
         mockMvc.perform(get("/api/v1/beer")
+                        .with(user(user).password(password).roles("USER"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()", is(3)));
+                .andExpect(jsonPath("$.length()", is(11)));
 
         System.out.println(mapper.writeValueAsString(beerServiceImpl.listBeers(any(),any(),anyBoolean(),anyInt(),anyInt())));
 
@@ -215,6 +239,7 @@ class BeerControllerTest {
         given(beerService.deleteById(any())).willReturn(true);
 
         mockMvc.perform(delete("/api/v1/beer/" + beerId)
+                        .with(user(user).password(password).roles("USER"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
@@ -226,7 +251,10 @@ class BeerControllerTest {
 
         given(beerService.getBeerById(any(UUID.class))).willThrow(NotFoundException.class);
 
-        mockMvc.perform(get("/api/v1/beer/" + UUID.randomUUID())).andExpect(status().isNotFound());
+        mockMvc.perform(get("/api/v1/beer/" + UUID.randomUUID())
+                .with(user(user).password(password).roles("USER")))
+                .andExpect(status().isNotFound());
+
     }
 
     @Test
@@ -244,6 +272,7 @@ class BeerControllerTest {
 
         // Perform the request and validate the pagination
         mockMvc.perform(get("/api/v1/beer?pageNumber=0&pageSize=2")
+                        .with(user(user).password(password).roles("USER"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -298,6 +327,8 @@ class BeerControllerTest {
 
         // When & Then
         mockMvc.perform(get("/api/v1/beer/" + testBeer.getId().toString())
+                        .with(user(user).password(password).roles("USER"))
+
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))

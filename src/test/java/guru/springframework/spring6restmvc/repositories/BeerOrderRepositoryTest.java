@@ -52,7 +52,8 @@ class BeerOrderRepositoryTest {
 
     }
 
-@Transactional
+@Transactional()
+
     @Test
     void testBeerOrder() {
         BeerOrder beerOrder = BeerOrder.builder()
